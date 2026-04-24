@@ -46,3 +46,6 @@ temp/
 
 # Sisyphus 工作目录
 .sisyphus/
+
+# 项目产出目录（运行时生成）
+.game-dev-team/
