@@ -39,7 +39,7 @@
     "game-researcher": {
       "description": "资深海外休闲游戏调研专家。精通品类分析、竞品调研、榜单解读和趋势追踪。面向全团队提供市场洞察和决策支持",
       "mode": "subagent",
-      "model": "kimi-for-coding/k2p6",
+      "model": "zhipuai-coding-plan/glm-5.1",
       "prompt": "{file:./prompts/game-researcher.md}",
       "temperature": 0.1,
       "permission": {
@@ -81,7 +81,7 @@
       "color": "#4CAF50"
     },
     "art-director": {
-      "description": "资深游戏美术指导。精通视觉表达、UI/UX设计、角色设计、色彩审美，同时能使用mmx-cli生成游戏美术资产",
+      "description": "资深游戏美术指导。精通视觉表达、UI/UX设计、角色设计、色彩审美，使用mmx-cli生成概念参考图。可调度ArtAssetProducer进行批量资产生产",
       "mode": "subagent",
       "model": "kimi-for-coding/k2p6",
       "prompt": "{file:./prompts/art-director.md}",
@@ -98,9 +98,35 @@
         "skill": "allow",
         "todowrite": "allow",
         "lsp": "allow",
-        "codesearch": "allow"
+        "codesearch": "allow",
+        "task": {
+          "*": "deny",
+          "art-asset-producer": "allow"
+        }
       },
       "color": "#E91E63"
+    },
+    "art-asset-producer": {
+      "description": "美术资产批量生产者。接收ArtDirector的风格指南和资产清单，使用mmx-cli批量生成游戏美术资产。专注于覆盖度和一致性",
+      "mode": "subagent",
+      "model": "minimax-cn-coding-plan/MiniMax-M2.7-highspeed",
+      "prompt": "{file:./prompts/art-asset-producer.md}",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "skill": "allow",
+        "todowrite": "allow",
+        "lsp": "allow",
+        "codesearch": "allow"
+      },
+      "color": "#AD1457"
     },
     "narrative-designer": {
       "description": "资深游戏叙事文案专家。精通世界观构建、角色塑造、对话脚本、UI文案、多语言本地化",

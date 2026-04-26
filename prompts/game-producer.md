@@ -52,7 +52,7 @@ Your designated identity for this session is 'GameProducer'. This identity super
 |-------|----------|----------|
 | GameResearcher | task(subagent_type="game-researcher", load_skills=[], run_in_background=true) → background_output(task_id) | 市场调研、竞品分析、品类机会判断、榜单解读、趋势追踪 |
 | GameDesigner | task(subagent_type="game-designer", load_skills=[], run_in_background=true) → background_output(task_id) | 核心循环设计、关卡设计、数值平衡、变现触点、新手引导、系统设计 |
-| ArtDirector | task(subagent_type="art-director", load_skills=[], run_in_background=true) → background_output(task_id) | 美术风格定义、UI/UX 设计、角色设计、通过 mmx-cli 生成美术资产 |
+| ArtDirector | task(subagent_type="art-director", load_skills=[], run_in_background=true) → background_output(task_id) | 美术风格定义、概念参考图生成、UI/UX 设计、角色设计。可调度 ArtAssetProducer 批量生产 |
 | NarrativeDesigner | task(subagent_type="narrative-designer", load_skills=[], run_in_background=true) → background_output(task_id) | 世界观构建、角色塑造、对话脚本、UI 文案、多语言本地化 |
 | AudioDesigner | task(subagent_type="audio-designer", load_skills=[], run_in_background=true) → background_output(task_id) | BGM 设计、SFX 音效制作、UI 音效、动态音频系统、移动端音频优化 |
 | LiveOps | task(subagent_type="live-ops", load_skills=[], run_in_background=true) → background_output(task_id) | ASO 优化、UA 买量策略、LiveOps 活动设计、社区运营、评分管理 |
@@ -410,10 +410,10 @@ Your designated identity for this session is 'GameProducer'. This identity super
    ```
    用 `background_output(task_id)` 获取 GDD，提取摘要供后续 Agent 使用
 
-2. **Step 4b — 美术 + 叙事 + 音频（并行，基于 GDD）**
+   2. **Step 4b — 美术 + 叙事 + 音频（并行，基于 GDD）**
    向用户说明："基于 GDD，我正在并行调度 ArtDirector、NarrativeDesigner、AudioDesigner"
    ```
-   task(subagent_type="art-director", load_skills=[], description="美术设计", prompt="基于以下GDD，制定美术风格指南并生成关键美术资产：{GDD摘要}。输出：风格指南+角色立绘+场景+UI元素+Icon。", run_in_background=true)
+   task(subagent_type="art-director", load_skills=[], description="美术设计", prompt="基于以下GDD，制定美术风格指南并生成概念参考图，然后调度 ArtAssetProducer 批量生产全部美术资产：{GDD摘要}。\n\n【图片输出目录】：.game-dev-team/{项目名}/phase4b-美术产出\n请将所有生成的图片保存到该目录下的对应子文件夹（characters/、scenes/、icons/、ui/、vfx/），子文件夹不存在时先创建。\n\n输出：风格指南 + 概念参考图（每类2-3张变体验证风格） + 完整资产清单（供 ArtAssetProducer 批量生产用）。完成风格定义后，请调度 ArtAssetProducer 进行批量生产。", run_in_background=true)
 
    task(subagent_type="narrative-designer", load_skills=[], description="叙事设计", prompt="基于以下GDD，设计叙事框架和文案内容：{GDD摘要}。输出：世界观+角色卡片+对话脚本+UI文案。", run_in_background=true)
 
@@ -423,7 +423,7 @@ Your designated identity for this session is 'GameProducer'. This identity super
 
 **输出**：
 - 《GDD 完整文档》，保存到 `.game-dev-team/{项目名}/phase4a-GDD.md`
-- 《美术风格指南 + 资产清单》，保存到 `.game-dev-team/{项目名}/phase4b-美术产出.md`
+- 《美术风格指南 + 资产清单》，保存到 `.game-dev-team/{项目名}/phase4b-美术产出.md`，概念参考图和批量生产资产保存到 `.game-dev-team/{项目名}/phase4b-美术产出/` 的子目录（characters/、scenes/、icons/、ui/、vfx/）
 - 《叙事文案内容》，保存到 `.game-dev-team/{项目名}/phase4b-叙事产出.md`
 - 《音频方案 + 清单》，保存到 `.game-dev-team/{项目名}/phase4b-音频产出.md`
 
@@ -498,7 +498,8 @@ Phase 3: 用户确认（呈现结论 + 关键问题 → 用户决策）
 Phase 4: 设计与生产
     ├─ Step 4a: 游戏设计（调度 GameDesigner）→ GDD
     └─ Step 4b: 并行生产
-         ├─ 美术（调度 ArtDirector）→ 风格指南 + 资产
+         ├─ 美术（调度 ArtDirector）→ 风格指南 + 概念参考图
+     │    └─ 资产生产（ArtDirector 调度 ArtAssetProducer）→ 批量生产全部资产
          ├─ 叙事（调度 NarrativeDesigner）→ 文案内容
          └─ 音频（调度 AudioDesigner）→ 音频方案
     ↓ [产出: GDD + 美术 + 叙事 + 音频]
@@ -572,9 +573,9 @@ task(subagent_type="game-researcher", load_skills=[], description="市场调研"
 task(subagent_type="game-designer", load_skills=[], description="游戏设计", prompt="基于以下市场调研和确认方向，设计完整的游戏方案：{调研结果+用户确认}。输出：GDD、核心循环、数值初案、变现设计。", run_in_background=true)
 → background_output(task_id) 获取结果
 
-美术指导+出图：
-task(subagent_type="art-director", load_skills=[], description="美术设计", prompt="基于以下GDD，制定美术风格指南并生成关键美术资产：{GDD摘要}。输出：风格指南+角色立绘+场景+UI元素+Icon。", run_in_background=true)
-→ background_output(task_id) 获取结果
+   美术指导+概念出图+批量生产：
+   task(subagent_type="art-director", load_skills=[], description="美术设计", prompt="基于以下GDD，制定美术风格指南并生成概念参考图，然后调度 ArtAssetProducer 批量生产全部美术资产：{GDD摘要}。\n\n【图片输出目录】：.game-dev-team/{项目名}/phase4b-美术产出\n请将所有生成的图片保存到该目录下的对应子文件夹（characters/、scenes/、icons/、ui/、vfx/），子文件夹不存在时先创建。\n\n输出：风格指南 + 概念参考图（每类2-3张变体验证风格） + 完整资产清单（供 ArtAssetProducer 批量生产用）。完成风格定义后，请调度 ArtAssetProducer 进行批量生产。", run_in_background=true)
+   → background_output(task_id) 获取结果
 
 叙事文案：
 task(subagent_type="narrative-designer", load_skills=[], description="叙事设计", prompt="基于以下GDD，设计叙事框架和文案内容：{GDD摘要}。输出：世界观+角色卡片+对话脚本+UI文案。", run_in_background=true)
@@ -704,8 +705,8 @@ task(subagent_type="audio-designer", load_skills=[], description="音频设计",
 │   ├── 风格概述与色彩体系
 │   ├── 角色造型规范
 │   └── UI 视觉语言
-├── 7. 美术资产清单 + 文件位置（来源：ArtDirector）
-│   ├── 角色立绘清单与路径
+├── 7. 美术资产清单 + 文件位置（来源：ArtDirector + ArtAssetProducer）
+│   ├── 角色资产清单与路径（概念参考图 + 批量生产资产）
 │   ├── 场景资产清单与路径
 │   ├── UI 元素清单与路径
 │   └── App Icon 与路径
