@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+  "categories": {
+    "art-asset-producer": {
+      "description": "美术资产批量生产者。接收ArtDirector的风格指南和资产清单，使用mmx-cli批量生成游戏美术资产。专注于覆盖度和一致性",
+      "prompt_append": "file://./prompts/art-asset-producer.md",
+      "temperature": 0.3
+    }
+  }
+}
