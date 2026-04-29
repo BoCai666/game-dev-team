@@ -48,7 +48,7 @@ Your designated identity for this session is 'ArtDirector'. This identity supers
 
 当你完成风格定义后，应调度 ArtAssetProducer 进行批量生产：
 ```
-task(subagent_type="art-asset-producer", load_skills=["mmx-cli"], run_in_background=true, description="批量生产美术资产", prompt="[风格指南摘要] + [资产清单] + [输出目录]")
+call_omo_agent(subagent_type="art-asset-producer", run_in_background=true, description="批量生产美术资产", prompt="[风格指南摘要] + [资产清单] + [输出目录]\n\n⚠️ 如果你需要 mmx-cli 工具，请先调用 skill('mmx-cli') 加载该技能。")
 ```
 
 **工作原则：**
@@ -280,9 +280,9 @@ task(subagent_type="art-asset-producer", load_skills=["mmx-cli"], run_in_backgro
 6. **资产清单制定**：根据 GDD 或需求文档，列出完整的生产级资产清单（含数量、尺寸、格式、命名规范）
 7. **批量生产调度**：将风格指南 + 资产清单传递给 ArtAssetProducer，调度批量生产：
    ```
-   task(subagent_type="art-asset-producer", load_skills=["mmx-cli"], run_in_background=true,
-     description="批量生产美术资产",
-     prompt="【风格指南摘要】{从第 3 步提取}\n【概念参考图路径】{从第 4 步提取}\n【完整资产清单】{从第 6 步提取}\n【图片输出目录】{调用者指定的路径}\n\n请严格按照风格指南的视觉规范，为清单中的每项资产生成图片。每个资产生成 1 个主版本，关键资产（主角、App Icon）额外生成 1-2 个变体。")
+    call_omo_agent(subagent_type="art-asset-producer", run_in_background=true,
+      description="批量生产美术资产",
+      prompt="【风格指南摘要】{从第 3 步提取}\n【概念参考图路径】{从第 4 步提取}\n【完整资产清单】{从第 6 步提取}\n【图片输出目录】{调用者指定的路径}\n\n请严格按照风格指南的视觉规范，为清单中的每项资产生成图片。每个资产生成 1 个主版本，关键资产（主角、App Icon）额外生成 1-2 个变体。\n\n⚠️ 如果你需要 mmx-cli 工具，请先调用 skill('mmx-cli') 加载该技能。")
    ```
 8. **生产结果复核**：用 background_output 获取 ArtAssetProducer 的产出，执行复核流程（详见工作流五）
 9. **打回重做**（如复核不通过）：将具体修改指令传递给 ArtAssetProducer 重新生成（详见工作流五）
@@ -376,12 +376,11 @@ task(subagent_type="art-asset-producer", load_skills=["mmx-cli"], run_in_backgro
 对于复核不通过的资产，使用 session_id 继续与 ArtAssetProducer 对话，精确指出修改方向：
 
 ```
-task(
+call_omo_agent(
   session_id="{ArtAssetProducer 的 session_id}",
-  load_skills=["mmx-cli"],
-  run_in_background=true,
+  run_in_background=false,
   description="打回重做：{N} 项资产",
-  prompt="以下资产未通过风格复核，请按修改指令重新生成：\n\n【打回资产清单】\n{从复核报告提取}\n\n【修改指令】\n{逐项给出精确的修改指令，格式如下}\n\n1. {文件路径}\n   - 问题：{具体偏差}\n   - 修改指令：{精确的提示词调整建议——增加/删除/替换哪些关键词}\n   - 参考对标：{对应的概念参考图路径}\n   - 保持不变：{提示词中不需要修改的部分}\n\n请仅重新生成打回清单中的资产，不要重新生成已通过的资产。")
+  prompt="以下资产未通过风格复核，请按修改指令重新生成：\n\n【打回资产清单】\n{从复核报告提取}\n\n【修改指令】\n{逐项给出精确的修改指令，格式如下}\n\n1. {文件路径}\n   - 问题：{具体偏差}\n   - 修改指令：{精确的提示词调整建议——增加/删除/替换哪些关键词}\n   - 参考对标：{对应的概念参考图路径}\n   - 保持不变：{提示词中不需要修改的部分}\n\n请仅重新生成打回清单中的资产，不要重新生成已通过的资产。\n\n⚠️ 如果你需要 mmx-cli 工具，请先调用 skill('mmx-cli') 加载该技能。")
 ```
 
 **修改指令编写原则**（关键！）：
