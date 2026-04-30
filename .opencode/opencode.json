@@ -81,7 +81,7 @@
       "color": "#4CAF50"
     },
     "art-director": {
-      "description": "资深游戏美术指导。精通视觉表达、UI/UX设计、角色设计、色彩审美，使用mmx-cli生成概念参考图。可调度ArtAssetProducer进行批量资产生产",
+      "description": "资深游戏美术指导。精通视觉表达、UI/UX设计、角色设计、色彩审美，输出AI出图提示词指南和完整资产清单。不直接生成图片，由用户通过独立出图代理按指南执行",
       "mode": "subagent",
       "model": "kimi-for-coding/k2p6",
       "prompt": "{file:./prompts/art-director.md}",
@@ -100,8 +100,7 @@
         "lsp": "allow",
         "codesearch": "allow",
         "task": {
-          "*": "deny",
-          "art-asset-producer": "allow"
+          "*": "deny"
         }
       },
       "color": "#E91E63"

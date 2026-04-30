@@ -23,15 +23,15 @@ AI 游戏开发团队 —— 基于 [OpenCode](https://github.com/anomalyco/open
               │
               ├── GameResearcher（市场调研）
               ├── GameDesigner（游戏设计）
-              ├── ArtDirector（美术指导）
-              │    └── ArtAssetProducer（美术资产批量生产）
+              ├── ArtDirector（美术指导 → 输出提示词 + 资产清单）
+              ├── ArtAssetProducer（出图代理 → 按指南批量出图）
               ├── NarrativeDesigner（叙事文案）
               ├── AudioDesigner（音频设计）
               ├── LiveOps（发行运营）
               └── GameDataAnalyst（数据分析）
 ```
 
-用户只能与 **GameProducer** 对话，其他专业 Agent 作为子代理由制作人统一调度。ArtAssetProducer 作为 ArtDirector 的子代理，由美术指导在需要批量生产时调度。
+用户只能与 **GameProducer** 对话，其他专业 Agent 作为子代理由制作人统一调度。ArtAssetProducer 作为独立的出图代理，由用户在需要时手动调度。
 
 ### 角色职责
 
@@ -40,7 +40,7 @@ AI 游戏开发团队 —— 基于 [OpenCode](https://github.com/anomalyco/open
 | 🎬 GameProducer | 编排中枢：需求采集、Agent 调度、进度管控、文档汇编 |
 | 🔍 GameResearcher | 市场调研：品类分析、竞品调研、榜单解读、趋势追踪 |
 | 🎮 GameDesigner | 游戏设计：核心循环、关卡设计、数值平衡、变现触点 |
-| 🎨 ArtDirector | 美术指导：风格定义、概念参考图生成、UI/UX 设计、角色设计 |
+| 🎨 ArtDirector | 美术指导：风格定义、AI 出图提示词输出、UI/UX 设计、角色设计、资产清单制定 |
 | 🖼️ ArtAssetProducer | 美术生产：按风格指南批量生成全部游戏美术资产 |
 | 📝 NarrativeDesigner | 叙事文案：世界观构建、角色塑造、对话脚本、UI 文案 |
 | 🎵 AudioDesigner | 音频设计：BGM 设计、SFX 制作、动态音频系统 |
@@ -70,7 +70,7 @@ game-dev-team/
 │   ├── game-producer.md   # 制作人（主编排器）
 │   ├── game-researcher.md # 市场调研专家
 │   ├── game-designer.md   # 游戏策划专家
-│   ├── art-director.md    # 美术指导（风格定义 + 概念出图）
+│   ├── art-director.md    # 美术指导（风格定义 + 提示词输出，不出图）
 │   ├── art-asset-producer.md # 美术资产批量生产者
 │   ├── narrative-designer.md # 叙事文案专家
 │   ├── audio-designer.md  # 音频设计专家
